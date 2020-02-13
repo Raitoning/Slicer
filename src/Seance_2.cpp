@@ -105,9 +105,9 @@ void Square_Filled_Sparse(){
     ofstream &file = printer.GetFile();
 
     double e = 0.0;
-    double height;
     double layer;
     double size = 10.0;
+    double height = size;
     double space = 0.4;
     bool direction;
     double begin_x = 100.0 - size/2 + printer.GetNozzleDiameter();
@@ -121,7 +121,7 @@ void Square_Filled_Sparse(){
     double x,y;
     double tmp;
 
-    for(layer = printer.GetLayerThickness(); layer < size; layer += printer.GetLayerThickness()){
+    for(layer = printer.GetLayerThickness(); layer < height; layer += printer.GetLayerThickness()){
 
         file << "G0 X" << (100.0+size/2) << " Y" << (100.0-size/2) << " F600" << endl;
         e += printer.GetExtruderValue(size);
