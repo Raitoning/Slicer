@@ -113,10 +113,12 @@ void Square_Filled_Sparse(){
     double begin_x = 100.0 - size/2 + printer.GetNozzleDiameter();
     double begin_y = 100.0 - size/2 + printer.GetNozzleDiameter();
     bool activate_fan = true;
+    double haut = 100 + size/2 - printer.GetNozzleDiameter()/2;
+    double bas = 100 - size/2 + printer.GetNozzleDiameter()/2;
+    double gauche = 100 - size/2 + printer.GetNozzleDiameter()/2;
+    double droite = 100 + size/2 - printer.GetNozzleDiameter()/2;
 
     double x,y;
-    double _x, _y;
-    double fin;
     double tmp;
 
     for(layer = printer.GetLayerThickness(); layer < size; layer += printer.GetLayerThickness()){
@@ -134,22 +136,20 @@ void Square_Filled_Sparse(){
         //Sens 45°
             direction = true;
             //Si il faut commencer un nouveau mur
-            fin = 100.0 - size/2 + printer.GetNozzleDiameter();
-            while(begin_x-space > fin )
+            while(begin_x-space > gauche )
                 begin_x -= space;
             
             //Commencer par le mur du haut, à gauche
-            fin = 100.0 + size/2 - printer.GetNozzleDiameter();
-            for(x = begin_x; x < fin; x += space){
+            for(x = begin_x; x < droite; x += space){
                 y = 200 - x;
-                e += printer.GetExtruderValue(distance(x, 100-size/2 + printer.GetNozzleDiameter()/2, 100.0 + size/2 - printer.GetNozzleDiameter()/2, y));
+                e += printer.GetExtruderValue(distance(x, gauche, haut, y));
                 if(direction){
-                    file << "G0 X" << x << " Y" << (100.0+size/2-printer.GetNozzleDiameter()/2) << " F600" << endl;
-                    file << "G0 X" << (100.0-size/2+printer.GetNozzleDiameter()/2) << " Y" << y << " E" << e << " F600" << endl;
+                    file << "G0 X" << x << " Y" << haut << " F600" << endl;
+                    file << "G1 X" << gauche << " Y" << y << " E" << e << " F600" << endl;
                 }
                 else{
-                    file << "G0 X" << (100.0-size/2+printer.GetNozzleDiameter()/2) << " Y" << y << " F600" << endl;
-                    file << "G0 X" << x << " Y" << (100.0+size/2-printer.GetNozzleDiameter()/2) << " E" << e << " F600" << endl;
+                    file << "G0 X" << gauche << " Y" << y << " F600" << endl;
+                    file << "G0 X" << x << " Y" << haut << " E" << e << " F600" << endl;
                 }
                 
                 direction = !direction;
@@ -159,8 +159,17 @@ void Square_Filled_Sparse(){
             //difference
             tmp = 100.0 + size/2 - x;
             y = 100.0 + size/2 - printer.GetNozzleDiameter() - tmp;
-            fin = 100.0 - size/2 + printer.GetNozzleDiameter();
-            for(; y > fin; y -= space){
+            for(; y > bas; y -= space){
+                x = 200 - y;
+                e += printer.GetExtruderValue(distance(x, droite, bas, y));
+                if(direction){
+                    file << "G0 X" << droite << " Y" << y << " F600" << endl;
+                    file << "G0 X" << x << " Y" << bas << " E" << e << " F600" << endl;
+                }
+                else{
+                    file << "G0 X" << x << " Y" << bas << " F600" << endl;
+                    file << "G0 X" << droite << " Y" << y << " E" << e << " F600" << endl;
+                }
 
                 direction = !direction;
             }
@@ -168,13 +177,21 @@ void Square_Filled_Sparse(){
         //Sens -45°
             direction = true;
             //Si il faut commencer un nouveau mur
-            fin = 100.0 - size/2 + printer.GetNozzleDiameter();
-            while(begin_x-space > fin )
+            while(begin_x-space > gauche )
                 begin_x -= space;
             
             //Commencer par le mur de droite
-            fin = 100.0 + size/2 - printer.GetNozzleDiameter();
-            for(x = begin_x; x < fin; x += space){
+            for(x = begin_x; x < droite; x += space){
+                y = x;
+                e += printer.GetExtruderValue(distance(x, gauche, bas, y));
+                if(direction){
+                    file << "G0 X" << x << " Y" << bas << " F600" << endl;
+                    file << "G1 X" << gauche << " Y" << y << " E" << e << " F600" << endl;
+                }
+                else{
+                    file << "G0 X" << gauche << " Y" << y << " F600" << endl;
+                    file << "G0 X" << x << " Y" << bas << " E" << e << " F600" << endl;
+                }
 
                 direction = !direction;
             }
@@ -183,14 +200,21 @@ void Square_Filled_Sparse(){
             //difference
             tmp = 100.0 + size/2 - x;
             y = 100.0 - size/2 + printer.GetNozzleDiameter() + tmp;
-            fin = 100.0 + size/2 - printer.GetNozzleDiameter();
-            for(; y < fin; y += space){
+            for(; y < haut; y += space){
+                y = x;
+                e += printer.GetExtruderValue(distance(x, droite, haut, y));
+                if(direction){
+                    file << "G0 X" << droite << " Y" << y << " F600" << endl;
+                    file << "G1 X" << x << " Y" << haut << " E" << e << " F600" << endl;
+                }
+                else{
+                    file << "G0 X" << x << " Y" << haut << " F600" << endl;
+                    file << "G0 X" << droite << " Y" << y << " E" << e << " F600" << endl;
+                }
 
                 direction = !direction;
-            }(100.0-size/2)
+            }
 
-        begin_x += printer.GetNozzleDiameter()/2;
-x = (100.0-size/2)+(printer.GetNozzleDiameter()/2);
         //Sens 0°
             direction = true;
             //Si il faut commencer un nouveau mur
