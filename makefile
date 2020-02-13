@@ -22,7 +22,7 @@ BINARIES_OUTPUT_DIR=$(BINARIES_DIR)/$(PLATFORM)/$(CONFIGURATION)
 INTERMEDIATES_DIR=$(BINARIES_DIR)/intermediates/$(PLATFORM)/$(CONFIGURATION)
 
 # Object file to compile, use .o suffix
-OBJECT_FILES=Main.o Printer.o Seance_1.o Functions.o
+OBJECT_FILES=Main.o Printer.o Seance_1.o Functions.o Seance_2.o
 
 # Source files for intermediates and debug purposes
 SOURCE_FILES=$(patsubst %.o, %.cpp, $(OBJECT_FILES))
