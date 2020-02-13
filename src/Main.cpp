@@ -12,7 +12,9 @@ int main(int argc, char **argv)
     //Cylinder();
     //Cylinder_Filled();
 
-    Hemisphere_Filled();
+    // Hemisphere_Filled();
+
+    Square_Filled_Sparse();
 
     return 0;
 }
