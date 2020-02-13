@@ -20,7 +20,7 @@ void Hemisphere_Filled()
     printer.SetLayerThickness(0.3);
 
     double e = 0.0;
-    double init_radius = 20.0;
+    double init_radius = 10.0;
     double curr_radius;
     double layer = printer.GetLayerThickness();
     bool activate_fan = true;
@@ -138,14 +138,24 @@ void Square_Filled_Sparse(){
             while(begin_x-space > fin )
                 begin_x -= space;
             
-            //Commencer par le mur de droite
+            //Commencer par le mur du haut, à gauche
             fin = 100.0 + size/2 - printer.GetNozzleDiameter();
             for(x = begin_x; x < fin; x += space){
-
+                y = 200 - x;
+                e += printer.GetExtruderValue(distance(x, 100-size/2 + printer.GetNozzleDiameter()/2, 100.0 + size/2 - printer.GetNozzleDiameter()/2, y));
+                if(direction){
+                    file << "G0 X" << x << " Y" << (100.0+size/2-printer.GetNozzleDiameter()/2) << " F600" << endl;
+                    file << "G0 X" << (100.0-size/2+printer.GetNozzleDiameter()/2) << " Y" << y << " E" << e << " F600" << endl;
+                }
+                else{
+                    file << "G0 X" << (100.0-size/2+printer.GetNozzleDiameter()/2) << " Y" << y << " F600" << endl;
+                    file << "G0 X" << x << " Y" << (100.0+size/2-printer.GetNozzleDiameter()/2) << " E" << e << " F600" << endl;
+                }
+                
                 direction = !direction;
             }
 
-            //Commencer par le mur du haut
+            //Commencer par le mur de droite
             //difference
             tmp = 100.0 + size/2 - x;
             y = 100.0 + size/2 - printer.GetNozzleDiameter() - tmp;
