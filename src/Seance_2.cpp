@@ -218,20 +218,18 @@ void Square_Filled_Sparse(){
         //Sens 0°
             direction = true;
             //Si il faut commencer un nouveau mur
-            fin = 100.0 - size/2 + printer.GetNozzleDiameter();
-            while(begin_y-space > fin )
+            while(begin_y-space > bas )
                 begin_y -= space;
 
             
-            fin = 100.0 + size/2 - printer.GetNozzleDiameter();
             x = (100.0+size/2- (printer.GetNozzleDiameter()/2));
             file << "G0 X" << x << " F600" << endl;
-            for(y = begin_y; y < fin; y += space){
+            for(y = begin_y; y < haut; y += space){
                 file << "G0 Y" << y << " F600" << endl;
                 if (direction){
-                    x = (100.0-size/2)+(printer.GetNozzleDiameter()/2);
+                    x = gauche;
                 }else{
-                    x = (100.0+size/2)-(printer.GetNozzleDiameter()/2);
+                    x = droite;
                 }
                 e += printer.GetExtruderValue(size - printer.GetNozzleDiameter());
                 file << "G1 X" << x << " E" << e << " F600" << endl;
