@@ -108,7 +108,7 @@ void Square_Filled_Sparse(){
     double layer;
     double size = 10.0;
     double height = size;
-    double space = 0.4;
+    double space = 1;
     bool direction;
     double begin_x = 100.0 - size/2 + printer.GetNozzleDiameter();
     double begin_y = 100.0 - size/2 + printer.GetNozzleDiameter();
@@ -201,7 +201,7 @@ void Square_Filled_Sparse(){
             tmp = 100.0 + size/2 - x;
             y = 100.0 - size/2 + printer.GetNozzleDiameter() + tmp;
             for(; y < haut; y += space){
-                y = x;
+                x = y;
                 e += printer.GetExtruderValue(distance(x, droite, haut, y));
                 if(direction){
                     file << "G0 X" << droite << " Y" << y << " F600" << endl;
@@ -237,6 +237,8 @@ void Square_Filled_Sparse(){
             }
 
         printer.NewLayer();
+        begin_x += printer.GetNozzleDiameter()/2;
+        begin_y += printer.GetNozzleDiameter()/2;
 
         if(activate_fan){
             printer.ActivateFan();
