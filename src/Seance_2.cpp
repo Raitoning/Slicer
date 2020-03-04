@@ -40,6 +40,10 @@ void Hemisphere_Filled()
     {
         curr_radius = cos(asin(layer / init_radius)) * init_radius;
         Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
+        curr_radius -= printer.GetNozzleDiameter();
+        Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
+        curr_radius -= printer.GetNozzleDiameter();
+        Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
 
         //Lignes verticales droite -> gauche
         if (direction)
@@ -174,9 +178,9 @@ void Square_Filled_Sparse()
 
             //Commencer par le mur de droite
             //difference
-            tmp = 100.0 + size / 2 - x;
-            y = 100.0 + size / 2 - printer.GetNozzleDiameter() - tmp;
-            for (; y / 2 > bas; y -= d_space)
+            tmp = (100.0 + size / 2 - x);
+            y = 100.0 + size / 2 - printer.GetNozzleDiameter() + tmp;
+            for (; y  > bas; y -= d_space)
             {
                 x = 200 - y;
                 e += printer.GetExtruderValue(distance(droite, y, x, bas));
@@ -218,10 +222,11 @@ void Square_Filled_Sparse()
 
             //Commencer par le mur du haut
             //difference
-            tmp = 100.0 + size / 2 - x;
-            y = 100.0 - size / 2 + printer.GetNozzleDiameter() + tmp;
-            for (; y / 2 < haut; y += d_space)
+            tmp = (100.0 + size / 2 - x);
+            y = 100.0 - size / 2 + printer.GetNozzleDiameter() - tmp;
+            for (; y  < haut; y += d_space)
             {
+            
                 x = y;
                 e += printer.GetExtruderValue(distance(droite, y, x, haut));
                 if (direction)
@@ -246,7 +251,7 @@ void Square_Filled_Sparse()
 
             x = (100.0 + size / 2 - (printer.GetNozzleDiameter() / 2));
             file << "G0 X" << x << " F2000" << endl;
-            for (y = begin_y; y - space / 2 < haut; y += space)
+            for (y = begin_y; y  < haut; y += space)
             {
                 file << "G0 Y" << y << " F2000" << endl;
                 if (direction)
