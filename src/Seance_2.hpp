@@ -2,4 +2,4 @@
 
 void Hemisphere_Filled();
 
-void Square_Filled_Sparse();
+void Cube_Filled_Sparse();

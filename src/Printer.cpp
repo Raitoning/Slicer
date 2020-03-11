@@ -74,8 +74,8 @@ void Printer::CloseFile(){
     file << "G90; absolute positioning" << endl;
     file << "G0 Y200 F3600; Permet de 'tirer la langue' avec le plateau" << endl;
     file << "G0 X0 F3600; Retour en 0 pour le X" << endl;
-    //file << "M104 S0; Extruder a 0 degre" << endl;
-    //file << "M140 S0; Bed a 0 degree" << endl;
+    file << "M104 S0; Extruder a 0 degre" << endl;
+    file << "M140 S0; Bed a 0 degree" << endl;
     file << "M107; desactiver le ventilateur" << endl;
 
     this->file.close();

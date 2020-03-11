@@ -24,7 +24,9 @@ void Hemisphere_Filled()
     double e = 0.0;
     double init_radius = 10.0;
     double curr_radius;
+    double next_radius;
     double layer = printer.GetLayerThickness();
+    double next_layer;
     bool activate_fan = true;
     bool direction = true;
     double space = 2.0;
@@ -36,23 +38,38 @@ void Hemisphere_Filled()
     int signe = 1;
     double d;
 
+    next_radius = cos(asin(layer / init_radius)) * init_radius;
+
     while (layer < init_radius)
     {
-        curr_radius = cos(asin(layer / init_radius)) * init_radius;
+        curr_radius = next_radius;
+
+        //Calcul du prochain rayon
+        next_layer = layer+cos(layer / init_radius) * 0.2 + 0.1;
+        //cout << "\tRadius: " << curr_radius;
+        if( (next_layer / init_radius) < 1.0){
+            next_radius = cos(asin(next_layer / init_radius)) * init_radius;
+        }
+        //Asin ne fonctionne pas pour une entrée >=1. On considère le prochain rayon à 0.
+        else{
+            next_radius = 0;
+        }
+        //cout << "\tNext_radius: " << next_radius << "\tLayerHeight: " << printer.GetLayerThickness() << endl;
+
         Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
-        curr_radius -= printer.GetNozzleDiameter();
-        Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
-        curr_radius -= printer.GetNozzleDiameter();
-        Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
+
+        //On fait des contours tant que ce contour sera visible de l'extérieur
+        while(curr_radius > next_radius){
+            curr_radius -= printer.GetNozzleDiameter();
+            Arc(printer, 2 * M_PI, curr_radius, 100.0, 100.0, e, 32);
+        }
 
         //Lignes verticales droite -> gauche
         if (direction)
         {
             x = begin_x;
             while (x > 100.0 + curr_radius - printer.GetNozzleDiameter())
-            {
                 x -= space;
-            }
 
             while (x > 100.0 - curr_radius + printer.GetNozzleDiameter())
             {
@@ -76,9 +93,7 @@ void Hemisphere_Filled()
         {
             y = begin_y;
             while (y > 100.0 + curr_radius - printer.GetNozzleDiameter())
-            {
                 y -= space;
-            }
 
             while (y > 100.0 - curr_radius + printer.GetNozzleDiameter())
             {
@@ -112,11 +127,11 @@ void Hemisphere_Filled()
     printer.CloseFile();
 }
 
-void Square_Filled_Sparse()
+void Cube_Filled_Sparse()
 {
     Printer printer;
 
-    printer.NewFile("Square_Filled_Spare.gcode");
+    printer.NewFile("Cube_Filled_Sparse.gcode");
 
     ofstream &file = printer.GetFile();
 
@@ -140,16 +155,6 @@ void Square_Filled_Sparse()
 
     for (layer = printer.GetLayerThickness(); layer < height; layer += printer.GetLayerThickness())
     {
-        //mur
-        /*file << "G0 X" << (100.0+size/2) << " Y" << (100.0-size/2) << " F600" << endl;
-        e += printer.GetExtruderValue(size);
-        file << "G1 Y" << (100.0 + size / 2) << " E" << e << " F600" << endl;
-        e += printer.GetExtruderValue(size);
-        file << "G1 X" << (100.0 - size / 2) << " E" << e << " F600" << endl;
-        e += printer.GetExtruderValue(size);
-        file << "G1 Y" << (100.0 - size / 2) << " E" << e << " F600" << endl;
-        e += printer.GetExtruderValue(size);
-        file << "G1 X" << (100.0+size/2) << " E" << e << " F600" << endl;//*/
 
         //Sens 45°
             direction = true;
@@ -164,12 +169,16 @@ void Square_Filled_Sparse()
                 e += printer.GetExtruderValue(distance(x, haut, gauche, y));
                 if (direction)
                 {
-                    file << "G0 X" << x << " Y" << haut << " F2000" << endl;
+                    file << "G1 E" << (e-1) << endl;
+                    file << "G0 X" << x << " Y" << haut <<  " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << gauche << " Y" << y << " E" << e << " F2000" << endl;
                 }
                 else
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << gauche << " Y" << y << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G0 X" << x << " Y" << haut << " E" << e << " F2000" << endl;
                 }
 
@@ -186,12 +195,16 @@ void Square_Filled_Sparse()
                 e += printer.GetExtruderValue(distance(droite, y, x, bas));
                 if (direction)
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << droite << " Y" << y << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << x << " Y" << bas << " E" << e << " F2000" << endl;
                 }
                 else
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << x << " Y" << bas << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << droite << " Y" << y << " E" << e << " F2000" << endl;
                 }
 
@@ -208,12 +221,16 @@ void Square_Filled_Sparse()
                 e += printer.GetExtruderValue(distance(x, bas, gauche, y));
                 if (direction)
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << x << " Y" << bas << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << gauche << " Y" << y << " E" << e << " F2000" << endl;
                 }
                 else
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << gauche << " Y" << y << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << x << " Y" << bas << " E" << e << " F2000" << endl;
                 }
 
@@ -231,12 +248,16 @@ void Square_Filled_Sparse()
                 e += printer.GetExtruderValue(distance(droite, y, x, haut));
                 if (direction)
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << droite << " Y" << y << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << x << " Y" << haut << " E" << e << " F2000" << endl;
                 }
                 else
                 {
+                    file << "G1 E" << (e-1) << endl;
                     file << "G0 X" << x << " Y" << haut << " F2000" << endl;
+                    file << "G1 E" << e << endl;
                     file << "G1 X" << droite << " Y" << y << " E" << e << " F2000" << endl;
                 }
 
@@ -250,18 +271,22 @@ void Square_Filled_Sparse()
                 begin_y -= space;
 
             x = (100.0 + size / 2 - (printer.GetNozzleDiameter() / 2));
+
+            file << "G1 E" << (e-1) << endl;
             file << "G0 X" << x << " F2000" << endl;
+            file << "G1 E" << e << endl;
+
             for (y = begin_y; y  < haut; y += space)
             {
+                file << "G1 E" << (e-1) << endl;
                 file << "G0 Y" << y << " F2000" << endl;
+                file << "G1 E" << e << endl;
+
                 if (direction)
-                {
                     x = gauche;
-                }
                 else
-                {
                     x = droite;
-                }
+
                 e += printer.GetExtruderValue(size - printer.GetNozzleDiameter());
                 file << "G1 X" << x << " E" << e << " F2000" << endl;
                 direction = !direction;

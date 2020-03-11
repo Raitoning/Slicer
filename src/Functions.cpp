@@ -15,9 +15,9 @@ void Arc(Printer &printer, double radian, double rayon, double x, double y, doub
     double yTarget = y+sin(angle_depart)*rayon;
     double oldY;
 
-    file << "G0 E" << (e-0.5) << std::endl;
+    file << "G1 E" << (e-1) << std::endl;
     file << "G0 X" << (x+rayon) << " Y" << y << std::endl;
-    file << "G0 E" << e << std::endl;
+    file << "G1 E" << e << std::endl;
 
     for (int i = 0; i <= approximations; i++)
     {
